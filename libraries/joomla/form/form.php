@@ -854,6 +854,20 @@ class JForm
 		// Attempt to load the XML file.
 		$xml = simplexml_load_file($file);
 
+                $previous = libxml_use_internal_errors(true);
+                libxml_clear_errors();
+                $xml = simplexml_load_string($xmlData);
+                libxml_use_internal_errors($previous);
+
+                if ($xml === false) {
+                        $errors = implode("\n", libxml_get_errors());
+
+                        throw new \RuntimeException(sprintf(
+                            "Cannot load file. LibXML Errors:\n%s",
+                            $errors
+                        ));
+                    }
+
 		return $this->load($xml, $reset, $xpath);
 	}
 
